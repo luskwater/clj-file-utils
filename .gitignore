@@ -2,3 +2,4 @@
 classes/
 lib/
 .DS_Store
+clj-file-utils*.jar

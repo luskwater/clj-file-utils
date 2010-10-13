@@ -1,5 +1,5 @@
-
 (ns clj-file-utils.core
+  "Provide a Clojure version of Ruby's FileUtils package."
   (:import (java.io File IOException)
            org.apache.commons.io.FileUtils)
   (:use clojure.contrib.shell-out)
@@ -14,12 +14,14 @@
   ([p q & names] (reduce file (file p q) names)))
 
 (defmacro defn-file [name docstring args & body]
+  "Define a 1-arg multimethod that works with File or String argument"
   `(do
     (defmulti ~name ~docstring class)
     (defmethod ~name File ~args ~@body)
     (defmethod ~name String ~args (~name (file ~@args)))))
 
 (defmacro defn-file-2 [name docstring args & body]
+  "Define a 2-arg multimethod that works with File or String arguments"
   `(do
     (defmulti ~name ~docstring (fn [a# b#] [(class a#) (class b#)]))
     (defmethod ~name [File File] ~args ~@body)
@@ -34,7 +36,7 @@
   (.exists file))
 
 (defn-file exist 
-  "DEPRICATED: Returns true if the file exists" 
+  "DEPRECATED: Returns true if the file exists" 
   [file] 
   (.exists file))
 
@@ -70,7 +72,7 @@
   (FileUtils/forceDelete file))
 
 (defn-file rm-r
-  "REmove a directory. The directory must be empty; will throw an exception
+  "Remove a directory. The directory must be empty; will throw an exception
   if it is not or if the file cannot be deleted."
   [dir]
   (if-not (.delete dir)
@@ -82,7 +84,7 @@
   (FileUtils/forceDelete dir))
 
 (defn-file touch
-  "'touch' as file, as with the Unix command."
+  "'touch' a file, as with the Unix command."
   [file]
   (FileUtils/touch file))
 
@@ -105,5 +107,8 @@
 ;;  (seq (. (new java.io.File dir) (listFiles))))
 
 
-(defn cwd [] (System/getProperty "user.dir"))
+(defn cwd
+  "Return the current working directory"
+  []
+  (System/getProperty "user.dir"))
 
